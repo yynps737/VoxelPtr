@@ -1,0 +1,6 @@
+{
+  "category.voxelptr": "VoxelPtr",
+  "key.voxelptr.toggle": "Toggle Enable/Disable",
+  "key.voxelptr.scan": "Manual Scan",
+  "key.voxelptr.switch_preset": "Switch Ore Type"
+}

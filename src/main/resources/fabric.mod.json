@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "voxelptr",
+  "version": "${version}",
+  "name": "VoxelPtr",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/voxelptr/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "io.github.yynps737.voxelptr.client.VoxelPtrDataGenerator"
+    ],
+    "client": [
+      "io.github.yynps737.voxelptr.client.VoxelPtrClient"
+    ],
+    "main": [
+      "io.github.yynps737.voxelptr.VoxelPtr"
+    ]
+  },
+  "mixins": [
+    "voxelptr.mixins.json",
+    {
+      "config": "voxelptr.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}

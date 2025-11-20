@@ -1,0 +1,6 @@
+{
+  "category.voxelptr": "像素指针",
+  "key.voxelptr.toggle": "切换启用/禁用",
+  "key.voxelptr.scan": "手动扫描",
+  "key.voxelptr.switch_preset": "切换矿石类型"
+}

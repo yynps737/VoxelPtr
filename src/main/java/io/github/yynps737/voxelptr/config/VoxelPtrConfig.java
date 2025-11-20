@@ -37,33 +37,6 @@ public class VoxelPtrConfig {
      */
     private boolean asyncScan = true;
 
-    // ========== 指针渲染配置 ==========
-
-    /**
-     * 最大显示距离（格）
-     */
-    private float maxDistance = 64.0f;
-
-    /**
-     * 指针样式
-     */
-    private String pointerStyle = "box";
-
-    /**
-     * 是否显示标签
-     */
-    private boolean showLabel = true;
-
-    /**
-     * 是否显示距离
-     */
-    private boolean showDistance = true;
-
-    /**
-     * 指针颜色（十六进制）
-     */
-    private int pointerColor = 0x00FFFF;
-
     // ========== HUD 配置 ==========
 
     /**
@@ -133,46 +106,6 @@ public class VoxelPtrConfig {
 
     public void setAsyncScan(boolean asyncScan) {
         this.asyncScan = asyncScan;
-    }
-
-    public float getMaxDistance() {
-        return maxDistance;
-    }
-
-    public void setMaxDistance(float maxDistance) {
-        this.maxDistance = maxDistance;
-    }
-
-    public String getPointerStyle() {
-        return pointerStyle;
-    }
-
-    public void setPointerStyle(String pointerStyle) {
-        this.pointerStyle = pointerStyle;
-    }
-
-    public boolean isShowLabel() {
-        return showLabel;
-    }
-
-    public void setShowLabel(boolean showLabel) {
-        this.showLabel = showLabel;
-    }
-
-    public boolean isShowDistance() {
-        return showDistance;
-    }
-
-    public void setShowDistance(boolean showDistance) {
-        this.showDistance = showDistance;
-    }
-
-    public int getPointerColor() {
-        return pointerColor;
-    }
-
-    public void setPointerColor(int pointerColor) {
-        this.pointerColor = pointerColor;
     }
 
     public boolean isHudEnabled() {

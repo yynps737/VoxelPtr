@@ -71,6 +71,73 @@ public class RenderUtil {
     }
 
     /**
+     * 绘制实体碰撞箱
+     * 使用与 drawBox 一致的坐标系统处理
+     *
+     * @param matrices 矩阵栈
+     * @param boundingBox 实体的碰撞箱
+     * @param cameraPos 相机位置
+     * @param red 红色
+     * @param green 绿色
+     * @param blue 蓝色
+     * @param alpha 透明度
+     * @param lineWidth 线条宽度
+     */
+    public static void drawEntityBox(
+            MatrixStack matrices,
+            net.minecraft.util.math.Box boundingBox,
+            Vec3d cameraPos,
+            float red,
+            float green,
+            float blue,
+            float alpha,
+            float lineWidth
+    ) {
+        matrices.push();
+
+        // 计算碰撞箱中心相对于相机的位置
+        double centerX = (boundingBox.minX + boundingBox.maxX) / 2.0 - cameraPos.x;
+        double centerY = (boundingBox.minY + boundingBox.maxY) / 2.0 - cameraPos.y;
+        double centerZ = (boundingBox.minZ + boundingBox.maxZ) / 2.0 - cameraPos.z;
+
+        // 移动矩阵到碰撞箱中心（与 drawBox 一致的做法）
+        matrices.translate(centerX, centerY, centerZ);
+
+        // 设置渲染状态
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableDepthTest(); // 透视效果
+        RenderSystem.disableCull();
+        RenderSystem.lineWidth(lineWidth);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        Matrix4f matrix = matrices.peek().getPositionMatrix();
+
+        // 计算碰撞箱在局部坐标系中的大小
+        float halfWidth = (float) (boundingBox.maxX - boundingBox.minX) / 2.0f;
+        float halfHeight = (float) (boundingBox.maxY - boundingBox.minY) / 2.0f;
+        float halfDepth = (float) (boundingBox.maxZ - boundingBox.minZ) / 2.0f;
+
+        // 在局部坐标系中绘制（中心在原点）
+        drawBoxEdges(buffer, matrix,
+                -halfWidth, -halfHeight, -halfDepth,  // min
+                halfWidth, halfHeight, halfDepth,      // max
+                red, green, blue, alpha);
+
+        tessellator.draw();
+
+        // 恢复渲染状态
+        RenderSystem.enableDepthTest();
+        RenderSystem.enableCull();
+        RenderSystem.disableBlend();
+
+        matrices.pop();
+    }
+
+    /**
      * 绘制带扩展的方框
      *
      * @param matrices 矩阵栈
@@ -163,19 +230,22 @@ public class RenderUtil {
         buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
-        // 从相机位置到目标位置
-        double x1 = -cameraPos.x;
-        double y1 = -cameraPos.y;
-        double z1 = -cameraPos.z;
+        // 起点：相机位置（在渲染坐标系中为原点）
+        double x1 = 0;
+        double y1 = 0;
+        double z1 = 0;
 
+        // 终点：目标位置（相对于相机）
         double x2 = targetPos.x - cameraPos.x;
         double y2 = targetPos.y - cameraPos.y;
         double z2 = targetPos.z - cameraPos.z;
 
         buffer.vertex(matrix, (float) x1, (float) y1, (float) z1)
-                .color(red, green, blue, alpha);
+                .color(red, green, blue, alpha)
+                .next();
         buffer.vertex(matrix, (float) x2, (float) y2, (float) z2)
-                .color(red, green, blue, alpha);
+                .color(red, green, blue, alpha)
+                .next();
 
         tessellator.draw();
 
@@ -224,8 +294,8 @@ public class RenderUtil {
             float x2, float y2, float z2,
             float r, float g, float b, float a
     ) {
-        buffer.vertex(matrix, x1, y1, z1).color(r, g, b, a);
-        buffer.vertex(matrix, x2, y2, z2).color(r, g, b, a);
+        buffer.vertex(matrix, x1, y1, z1).color(r, g, b, a).next();
+        buffer.vertex(matrix, x2, y2, z2).color(r, g, b, a).next();
     }
 
     /**

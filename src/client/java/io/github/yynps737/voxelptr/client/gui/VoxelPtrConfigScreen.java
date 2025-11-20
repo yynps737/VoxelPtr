@@ -129,50 +129,6 @@ public class VoxelPtrConfigScreen extends Screen {
 
         currentY += SECTION_SPACING;
 
-        // ========== 渲染设置 ==========
-        currentY = addCategoryHeader("gui.voxelptr.config.category.render", currentY);
-
-        // 最大显示距离
-        currentY = addSliderWidget(
-            "gui.voxelptr.config.max_distance",
-            "gui.voxelptr.config.max_distance.tooltip",
-            16, 256,
-            (int) config.getMaxDistance(),
-            value -> config.setMaxDistance(value),
-            value -> value + "m",
-            currentY
-        );
-
-        // 指针样式
-        currentY = addCyclingWidget(
-            "gui.voxelptr.config.pointer_style",
-            "gui.voxelptr.config.pointer_style.tooltip",
-            getPointerStyleOptions(),
-            config.getPointerStyle(),
-            value -> config.setPointerStyle(value),
-            currentY
-        );
-
-        // 显示标签
-        currentY = addToggleWidget(
-            "gui.voxelptr.config.show_label",
-            "gui.voxelptr.config.show_label.tooltip",
-            config.isShowLabel(),
-            value -> config.setShowLabel(value),
-            currentY
-        );
-
-        // 显示距离
-        currentY = addToggleWidget(
-            "gui.voxelptr.config.show_distance",
-            "gui.voxelptr.config.show_distance.tooltip",
-            config.isShowDistance(),
-            value -> config.setShowDistance(value),
-            currentY
-        );
-
-        currentY += SECTION_SPACING;
-
         // ========== HUD 设置 ==========
         currentY = addCategoryHeader("gui.voxelptr.config.category.hud", currentY);
 
@@ -427,10 +383,6 @@ public class VoxelPtrConfigScreen extends Screen {
         config.setScanRadiusChunks(defaults.getScanRadiusChunks());
         config.setScanIntervalTicks(defaults.getScanIntervalTicks());
         config.setAsyncScan(defaults.isAsyncScan());
-        config.setMaxDistance(defaults.getMaxDistance());
-        config.setPointerStyle(defaults.getPointerStyle());
-        config.setShowLabel(defaults.isShowLabel());
-        config.setShowDistance(defaults.isShowDistance());
         config.setHudEnabled(defaults.isHudEnabled());
         config.setHudPosition(defaults.getHudPosition());
         config.setMaxHudTargets(defaults.getMaxHudTargets());
@@ -543,10 +495,6 @@ public class VoxelPtrConfigScreen extends Screen {
             "villager", "pillager", "enderman", "animals",
             "hostile", "player", "boss", "neutral"
         );
-    }
-
-    private List<String> getPointerStyleOptions() {
-        return List.of("box", "line", "beacon", "arrow");
     }
 
     private List<String> getHudPositionOptions() {

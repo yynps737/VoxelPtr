@@ -19,6 +19,12 @@ loom {
             sourceSet sourceSets.client
         }
     }
+
+    runs {
+        client {
+            programArg "--username=Player824"
+        }
+    }
 }
 
 fabricApi {

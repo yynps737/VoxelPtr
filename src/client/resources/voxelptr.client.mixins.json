@@ -6,7 +6,6 @@
   "client": [
     "MixinClientChunkManager",
     "MixinClientWorld",
-    "MixinWorldRenderer",
     "MixinInGameHud"
   ],
   "injectors": {

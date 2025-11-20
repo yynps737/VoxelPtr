@@ -54,7 +54,7 @@ public class TargetTracker {
     public void tick(World world) {
         long now = System.currentTimeMillis();
 
-        // 移除过期和无效的目标
+        // 移除过期和无效的目标（性能优化：简化逻辑，减少重复判断）
         activeTargets.values().removeIf(target -> {
             // 1. 过期检查：根据目标类型使用不同的过期时间
             long expiryTime = (target instanceof BlockTarget) ? BLOCK_EXPIRY_TIME_MS : ENTITY_EXPIRY_TIME_MS;
@@ -62,19 +62,8 @@ public class TargetTracker {
                 return true; // 移除
             }
 
-            // 2. 有效性检查
-            if (!target.isValid()) {
-                return true; // 移除
-            }
-
-            // 3. 方块目标特殊验证（检查方块是否被挖掉）
-            if (target instanceof BlockTarget) {
-                if (!target.isValid(world)) {
-                    return true; // 方块已改变，移除
-                }
-            }
-
-            return false; // 保留
+            // 2. 有效性检查（isValid(world) 会内部调用 isValid()，无需重复检查）
+            return !target.isValid(world);
         });
     }
 
@@ -136,7 +125,7 @@ public class TargetTracker {
      */
     public List<Target> getTargetsSortedByDistance(Entity viewer) {
         return activeTargets.values().stream()
-                .sorted(Comparator.comparing(t -> t.getDistanceTo(viewer)))
+                .sorted(Comparator.comparingDouble(t -> t.getSquaredDistanceTo(viewer)))
                 .collect(Collectors.toList());
     }
 
@@ -148,9 +137,10 @@ public class TargetTracker {
      * @return 距离内的目标列表
      */
     public List<Target> getTargetsWithinDistance(Entity viewer, float maxDistance) {
+        double maxSquaredDistance = maxDistance * maxDistance;
         return activeTargets.values().stream()
-                .filter(t -> t.getDistanceTo(viewer) <= maxDistance)
-                .sorted(Comparator.comparing(t -> t.getDistanceTo(viewer)))
+                .filter(t -> t.getSquaredDistanceTo(viewer) <= maxSquaredDistance)
+                .sorted(Comparator.comparingDouble(t -> t.getSquaredDistanceTo(viewer)))
                 .collect(Collectors.toList());
     }
 
@@ -163,7 +153,7 @@ public class TargetTracker {
      */
     public List<Target> getNearestTargets(Entity viewer, int count) {
         return activeTargets.values().stream()
-                .sorted(Comparator.comparing(t -> t.getDistanceTo(viewer)))
+                .sorted(Comparator.comparingDouble(t -> t.getSquaredDistanceTo(viewer)))
                 .limit(count)
                 .collect(Collectors.toList());
     }

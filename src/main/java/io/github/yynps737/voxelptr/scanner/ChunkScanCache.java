@@ -6,10 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 区块扫描缓存
@@ -65,13 +62,13 @@ public class ChunkScanCache {
      * 从缓存获取
      *
      * @param pos 区块坐标
-     * @return 该区块的目标列表，如果不存在返回 null
+     * @return 该区块的目标列表（不可修改视图），如果不存在返回 null
      */
     public synchronized List<BlockTarget> get(ChunkPos pos) {
         List<BlockTarget> targets = cache.get(pos);
         if (targets != null) {
-            // 返回副本，避免外部修改
-            return new ArrayList<>(targets);
+            // 性能优化：返回不可修改视图（零拷贝）而非副本
+            return Collections.unmodifiableList(targets);
         }
         return null;
     }

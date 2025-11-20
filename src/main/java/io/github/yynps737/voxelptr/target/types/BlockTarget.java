@@ -9,11 +9,60 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 方块目标
  * 表示一个特定位置的方块（如矿物、资源等）
  */
 public class BlockTarget extends Target {
+
+    /**
+     * 方块颜色映射表（性能优化：静态 HashMap，O(1) 查询）
+     */
+    private static final Map<Block, Integer> BLOCK_COLORS = new HashMap<>();
+
+    static {
+        // 钻石矿 - 青色
+        BLOCK_COLORS.put(Blocks.DIAMOND_ORE, 0xFF00FFFF);
+        BLOCK_COLORS.put(Blocks.DEEPSLATE_DIAMOND_ORE, 0xFF00FFFF);
+
+        // 铁矿 - 浅灰色
+        BLOCK_COLORS.put(Blocks.IRON_ORE, 0xFFD8D8D8);
+        BLOCK_COLORS.put(Blocks.DEEPSLATE_IRON_ORE, 0xFFD8D8D8);
+
+        // 金矿 - 金色
+        BLOCK_COLORS.put(Blocks.GOLD_ORE, 0xFFFFD700);
+        BLOCK_COLORS.put(Blocks.DEEPSLATE_GOLD_ORE, 0xFFFFD700);
+        BLOCK_COLORS.put(Blocks.NETHER_GOLD_ORE, 0xFFFFD700);
+
+        // 绿宝石矿 - 绿色
+        BLOCK_COLORS.put(Blocks.EMERALD_ORE, 0xFF00FF00);
+        BLOCK_COLORS.put(Blocks.DEEPSLATE_EMERALD_ORE, 0xFF00FF00);
+
+        // 煤矿 - 深灰色
+        BLOCK_COLORS.put(Blocks.COAL_ORE, 0xFF4A4A4A);
+        BLOCK_COLORS.put(Blocks.DEEPSLATE_COAL_ORE, 0xFF4A4A4A);
+
+        // 红石矿 - 红色
+        BLOCK_COLORS.put(Blocks.REDSTONE_ORE, 0xFFFF0000);
+        BLOCK_COLORS.put(Blocks.DEEPSLATE_REDSTONE_ORE, 0xFFFF0000);
+
+        // 青金石矿 - 蓝色
+        BLOCK_COLORS.put(Blocks.LAPIS_ORE, 0xFF0000FF);
+        BLOCK_COLORS.put(Blocks.DEEPSLATE_LAPIS_ORE, 0xFF0000FF);
+
+        // 铜矿 - 橙色
+        BLOCK_COLORS.put(Blocks.COPPER_ORE, 0xFFFF8C00);
+        BLOCK_COLORS.put(Blocks.DEEPSLATE_COPPER_ORE, 0xFFFF8C00);
+
+        // 远古残骸 - 棕色
+        BLOCK_COLORS.put(Blocks.ANCIENT_DEBRIS, 0xFF8B4513);
+
+        // 石英矿 - 白色
+        BLOCK_COLORS.put(Blocks.NETHER_QUARTZ_ORE, 0xFFFFFFFF);
+    }
 
     private final BlockPos blockPos;
     private final BlockState expectedState;
@@ -43,30 +92,8 @@ public class BlockTarget extends Target {
 
     @Override
     public int getColor() {
-        Block block = expectedState.getBlock();
-
-        // 根据方块类型返回颜色
-        if (block == Blocks.DIAMOND_ORE || block == Blocks.DEEPSLATE_DIAMOND_ORE) {
-            return 0xFF00FFFF; // 青色（钻石）
-        } else if (block == Blocks.IRON_ORE || block == Blocks.DEEPSLATE_IRON_ORE) {
-            return 0xFFD8D8D8; // 浅灰色（铁）
-        } else if (block == Blocks.GOLD_ORE || block == Blocks.DEEPSLATE_GOLD_ORE) {
-            return 0xFFFFD700; // 金色
-        } else if (block == Blocks.EMERALD_ORE || block == Blocks.DEEPSLATE_EMERALD_ORE) {
-            return 0xFF00FF00; // 绿色（绿宝石）
-        } else if (block == Blocks.COAL_ORE || block == Blocks.DEEPSLATE_COAL_ORE) {
-            return 0xFF4A4A4A; // 深灰色（煤炭）
-        } else if (block == Blocks.REDSTONE_ORE || block == Blocks.DEEPSLATE_REDSTONE_ORE) {
-            return 0xFFFF0000; // 红色（红石）
-        } else if (block == Blocks.LAPIS_ORE || block == Blocks.DEEPSLATE_LAPIS_ORE) {
-            return 0xFF0000FF; // 蓝色（青金石）
-        } else if (block == Blocks.COPPER_ORE || block == Blocks.DEEPSLATE_COPPER_ORE) {
-            return 0xFFFF8C00; // 橙色（铜）
-        } else if (block == Blocks.ANCIENT_DEBRIS) {
-            return 0xFF8B4513; // 棕色（远古残骸）
-        }
-
-        return 0xFFFFFFFF; // 默认白色
+        // O(1) 查询，性能优化：从 O(n) if-else 链改为 HashMap 查询
+        return BLOCK_COLORS.getOrDefault(expectedState.getBlock(), 0xFFFFFFFF);
     }
 
     /**

@@ -12,7 +12,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * 目标列表 HUD
@@ -27,6 +30,14 @@ public class TargetListHud extends HudElement {
     private long lastUpdateTime = 0;
     private static final long UPDATE_INTERVAL_MS = 100; // 每100ms更新一次（10 FPS）
 
+    // 性能优化：缓存方向字符串（避免每帧重复计算三角函数）
+    private final Map<UUID, String> directionCache = new HashMap<>();
+    private float lastPlayerYaw = 0;
+    private static final float YAW_THRESHOLD = 5.0f; // 玩家旋转超过5度时更新
+
+    // 性能优化：缓存最大名称长度（避免每帧重新计算）
+    private int cachedMaxNameLength = 0;
+
     public TargetListHud(VoxelPtrCore core, int x, int y) {
         super(x, y);
         this.core = core;
@@ -34,13 +45,31 @@ public class TargetListHud extends HudElement {
 
     /**
      * 获取方向字符串（基于玩家局部坐标系的向量投影算法）
-     * 
+     *
      * 核心原理：
      * 1. 计算世界坐标系下的相对位移向量 (Delta Vector)
      * 2. 构建玩家的局部基向量 (Local Basis Vectors): 前方(Forward) 和 右方(Right)
      * 3. 使用点积 (Dot Product) 将位移向量投影到局部基向量上，得到相对距离
+     *
+     * 性能优化：使用缓存避免每帧重复计算三角函数
      */
     private String getDirectionString(Entity player, Target target) {
+        float currentYaw = player.getYaw();
+
+        // 检查玩家是否旋转超过阈值
+        float yawDelta = Math.abs(currentYaw - lastPlayerYaw);
+        boolean yawChanged = yawDelta > YAW_THRESHOLD;
+
+        // 如果玩家没有显著旋转且缓存中有该目标，直接返回缓存
+        if (!yawChanged && directionCache.containsKey(target.getId())) {
+            return directionCache.get(target.getId());
+        }
+
+        // 玩家旋转了，清空所有缓存并更新 yaw
+        if (yawChanged) {
+            directionCache.clear();
+            lastPlayerYaw = currentYaw;
+        }
         // 1. 获取世界坐标系下的相对位移 (World Space Delta)
         Vec3d playerPos = player.getPos();
         Vec3d targetPos = target.getPosition();
@@ -89,9 +118,13 @@ public class TargetListHud extends HudElement {
         if (forwardDist > 1.0) frontBack = "↑";      // 前 (在前方向量上有正投影)
         else if (forwardDist < -1.0) frontBack = "↓"; // 后 (在前方向量上有负投影)
 
-        return I18n.translate("hud.voxelptr.direction.vertical") + ":" + upDown + " " +
-               I18n.translate("hud.voxelptr.direction.horizontal") + ":" + leftRight + " " +
-               I18n.translate("hud.voxelptr.direction.depth") + ":" + frontBack;
+        String result = I18n.translate("hud.voxelptr.direction.vertical") + ":" + upDown + " " +
+                I18n.translate("hud.voxelptr.direction.horizontal") + ":" + leftRight + " " +
+                I18n.translate("hud.voxelptr.direction.depth") + ":" + frontBack;
+
+        // 缓存结果
+        directionCache.put(target.getId(), result);
+        return result;
     }
 
     @Override
@@ -117,6 +150,13 @@ public class TargetListHud extends HudElement {
         if (currentTime - lastUpdateTime > UPDATE_INTERVAL_MS) {
             cachedTargets = tracker.getNearestTargets(player, core.getConfig().getMaxHudTargets());
             lastUpdateTime = currentTime;
+            // 目标列表变化时，清空方向缓存
+            directionCache.clear();
+            // 同时更新缓存的最大名称长度
+            cachedMaxNameLength = cachedTargets.stream()
+                    .mapToInt(t -> t.getDisplayName().length())
+                    .max()
+                    .orElse(0);
         }
 
         if (cachedTargets.isEmpty()) {
@@ -148,16 +188,8 @@ public class TargetListHud extends HudElement {
         context.drawTextWithShadow(textRenderer, title, x, yOffset, 0xFFFFFF);
         yOffset += 12;
 
-        // 计算最长名称的字符数（用于对齐）
-        int maxNameLength = 0;
-        for (Target target : cachedTargets) {
-            int nameLength = target.getDisplayName().length();
-            if (nameLength > maxNameLength) {
-                maxNameLength = nameLength;
-            }
-        }
-
         // 渲染每个目标（带方向指示）
+        // 性能优化：使用缓存的 maxNameLength，避免每帧重新计算
         for (int i = 0; i < Math.min(cachedTargets.size(), core.getConfig().getMaxHudTargets()); i++) {
             Target target = cachedTargets.get(i);
             float distance = target.getDistanceTo(player);
@@ -165,7 +197,7 @@ public class TargetListHud extends HudElement {
 
             // 使用固定宽度格式化名称，左对齐并填充空格
             // 格式: "钻石矿石     👆↑ 12.5m"
-            String text = String.format("%-" + maxNameLength + "s %s %.1fm",
+            String text = String.format("%-" + cachedMaxNameLength + "s %s %.1fm",
                     target.getDisplayName(),
                     direction,
                     distance

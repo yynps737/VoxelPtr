@@ -261,6 +261,11 @@ public class ChunkEventScanner implements Scanner<BlockTarget> {
      * @param blocks 新的目标方块集合
      */
     public void setTargetBlocks(Set<Block> blocks) {
+        // 性能优化：检查是否真的需要更新（避免不必要的缓存清空）
+        if (this.targetBlocks.equals(blocks)) {
+            return; // 目标方块集合未变化，跳过
+        }
+
         this.targetBlocks.clear();
         this.targetBlocks.addAll(blocks);
         // 清空缓存，因为目标改变了

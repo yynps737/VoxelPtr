@@ -41,6 +41,14 @@ public abstract class Target {
     }
 
     /**
+     * 计算到观察者的平方距离（性能优化）
+     * 用于排序比较，避免 sqrt 计算
+     */
+    public double getSquaredDistanceTo(Entity viewer) {
+        return viewer.getPos().squaredDistanceTo(position);
+    }
+
+    /**
      * 检查目标是否仍然有效
      * 子类实现具体的验证逻辑
      */

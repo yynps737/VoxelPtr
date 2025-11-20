@@ -1,0 +1,225 @@
+name: Publish Mod
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  JAVA_VERSION: 17
+
+jobs:
+  build:
+    name: Build and Publish
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # 需要写入权限来创建 Release
+
+    steps:
+      # 1. 检出代码
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. 设置 Java 环境
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      # 3. 赋予 Gradle 执行权限
+      - name: Grant Execute Permission for Gradle
+        run: chmod +x gradlew
+
+      # 4. 构建 Mod
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      # 5. 获取版本信息
+      - name: Get Version from Tag
+        id: version
+        run: |
+          # 移除 'v' 前缀，例如 v1.0.0 -> 1.0.0
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "minecraft=1.20.4" >> $GITHUB_OUTPUT
+
+          # 获取 JAR 文件名
+          JAR_FILE=$(ls build/libs/ | grep -v sources | grep .jar$ | head -n 1)
+          echo "jar_file=build/libs/$JAR_FILE" >> $GITHUB_OUTPUT
+          echo "jar_name=$JAR_FILE" >> $GITHUB_OUTPUT
+
+      # 6. 读取 CHANGELOG
+      - name: Extract Changelog
+        id: changelog
+        run: |
+          # 提取当前版本的 CHANGELOG
+          VERSION=${{ steps.version.outputs.version }}
+          CHANGELOG=$(awk "/## \[$VERSION\]/,/## \[/" CHANGELOG.md | sed '/## \[/d' | sed '/^$/d')
+
+          # 转义特殊字符并保存
+          CHANGELOG="${CHANGELOG//'%'/'%25'}"
+          CHANGELOG="${CHANGELOG//$'\n'/'%0A'}"
+          CHANGELOG="${CHANGELOG//$'\r'/'%0D'}"
+          echo "content=$CHANGELOG" >> $GITHUB_OUTPUT
+
+      # 7. 发布到 Modrinth (主要平台)
+      - name: Publish to Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: ${{ secrets.MODRINTH_PROJECT_ID }}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+          files: ${{ steps.version.outputs.jar_file }}
+          name: VoxelPtr v${{ steps.version.outputs.version }}
+          version: ${{ steps.version.outputs.version }}
+          version-type: release
+
+          loaders: fabric
+          game-versions: |
+            1.20.4
+
+          dependencies: |
+            fabric-api | depends | *
+            modmenu | recommends | *
+
+          changelog: ${{ steps.changelog.outputs.content }}
+
+      # 8. 发布到 CurseForge (跟随平台) - 暂时禁用
+      # - name: Publish to CurseForge
+      #   uses: Kir-Antipov/mc-publish@v3.3
+      #   with:
+      #     curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+      #     curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+      #
+      #     files: ${{ steps.version.outputs.jar_file }}
+      #     name: VoxelPtr v${{ steps.version.outputs.version }}
+      #     version: ${{ steps.version.outputs.version }}
+      #     version-type: release
+      #
+      #     loaders: fabric
+      #     game-versions: |
+      #       1.20.4
+      #
+      #     dependencies: |
+      #       fabric-api | required
+      #       modmenu | optional
+      #
+      #     changelog: ${{ steps.changelog.outputs.content }}
+
+      # 9. 创建 GitHub Release
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ steps.version.outputs.jar_file }}
+          body: |
+            # VoxelPtr v${{ steps.version.outputs.version }}
+
+            高性能 Minecraft 矿石追踪模组 - 为 Minecraft ${{ steps.version.outputs.minecraft }} 构建
+
+            ## 📥 下载
+
+            - **Modrinth**: https://modrinth.com/mod/voxelptr
+
+            ## 📝 更新日志
+
+            ${{ steps.changelog.outputs.content }}
+
+            ## 📦 安装方法
+
+            1. 安装 [Fabric Loader](https://fabricmc.net/use/)
+            2. 下载 [Fabric API](https://modrinth.com/mod/fabric-api)
+            3. 下载 VoxelPtr 并放入 `mods` 文件夹
+            4. 启动游戏
+
+            ## 🎮 使用说明
+
+            - 按 `V` 键启用/禁用功能
+            - 按 `N` 键切换矿物预设
+            - 在配置菜单中自定义设置
+
+            ---
+
+            **支持的 Minecraft 版本**: ${{ steps.version.outputs.minecraft }}
+            **需要 Fabric API**: 是
+            **性能提升**: 50-70% 🚀
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 10. 发送 Discord 通知 - 暂时禁用
+      # - name: Send Discord Notification
+      #   if: success()
+      #   env:
+      #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      #   run: |
+      #     VERSION=${{ steps.version.outputs.version }}
+      #     MINECRAFT=${{ steps.version.outputs.minecraft }}
+      #     JAR_NAME=${{ steps.version.outputs.jar_name }}
+      #
+      #     # 创建 Discord Embed 消息
+      #     curl -H "Content-Type: application/json" \
+      #       -d '{
+      #         "embeds": [{
+      #           "title": "🎉 VoxelPtr v'"$VERSION"' 已发布！",
+      #           "description": "新版本已成功发布到所有平台",
+      #           "color": 5814783,
+      #           "fields": [
+      #             {
+      #               "name": "📦 版本",
+      #               "value": "v'"$VERSION"'",
+      #               "inline": true
+      #             },
+      #             {
+      #               "name": "🎮 Minecraft",
+      #               "value": "'"$MINECRAFT"'",
+      #               "inline": true
+      #             },
+      #             {
+      #               "name": "⚡ 性能提升",
+      #               "value": "50-70%",
+      #               "inline": true
+      #             },
+      #             {
+      #               "name": "📥 下载链接",
+      #               "value": "[Modrinth](https://modrinth.com/mod/voxelptr) | [CurseForge](https://www.curseforge.com/minecraft/mc-mods/voxelptr) | [GitHub](https://github.com/'"$GITHUB_REPOSITORY"'/releases/tag/v'"$VERSION"')"
+      #             },
+      #             {
+      #               "name": "✨ 主要特性",
+      #               "value": "• 实时矿石扫描\n• 10种矿物预设\n• 方向指示系统\n• 高度可配置"
+      #             }
+      #           ],
+      #           "footer": {
+      #             "text": "VoxelPtr - 高性能矿石追踪"
+      #           },
+      #           "timestamp": "'"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"'"
+      #         }]
+      #       }' \
+      #       "$DISCORD_WEBHOOK"
+      #
+      # # 11. 失败通知
+      # - name: Send Discord Failure Notification
+      #   if: failure()
+      #   env:
+      #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      #   run: |
+      #     VERSION=${{ steps.version.outputs.version }}
+      #
+      #     curl -H "Content-Type: application/json" \
+      #       -d '{
+      #         "embeds": [{
+      #           "title": "❌ 发布失败",
+      #           "description": "VoxelPtr v'"$VERSION"' 发布过程中出现错误",
+      #           "color": 16711680,
+      #           "fields": [
+      #             {
+      #               "name": "查看详情",
+      #               "value": "[GitHub Actions](https://github.com/'"$GITHUB_REPOSITORY"'/actions/runs/'"$GITHUB_RUN_ID"')"
+      #             }
+      #           ],
+      #           "timestamp": "'"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"'"
+      #         }]
+      #       }' \
+      #       "$DISCORD_WEBHOOK"

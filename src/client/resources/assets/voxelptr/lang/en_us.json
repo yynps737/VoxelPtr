@@ -5,7 +5,7 @@
   "key.voxelptr.switch_preset": "Switch Ore Type",
 
   "gui.voxelptr.config.title": "VoxelPtr Configuration",
-  "gui.voxelptr.config.subtitle": "Customize your ore and entity tracking experience",
+  "gui.voxelptr.config.subtitle": "Customize your ore tracking experience",
   "gui.voxelptr.config.reset": "Reset to Defaults",
 
   "gui.voxelptr.config.category.basic": "Basic Settings",
@@ -17,7 +17,7 @@
   "gui.voxelptr.config.enabled.tooltip": "Toggle VoxelPtr on or off",
 
   "gui.voxelptr.config.preset": "Current Preset",
-  "gui.voxelptr.config.preset.tooltip": "Select which ore or entity type to track",
+  "gui.voxelptr.config.preset.tooltip": "Select which ore type to track",
 
   "gui.voxelptr.config.scan_radius": "Scan Radius",
   "gui.voxelptr.config.scan_radius.tooltip": "How far to scan (in chunks)",
@@ -35,7 +35,7 @@
   "gui.voxelptr.config.pointer_style.tooltip": "Visual style of the pointers",
 
   "gui.voxelptr.config.show_label": "Show Labels",
-  "gui.voxelptr.config.show_label.tooltip": "Display ore/entity names on pointers",
+  "gui.voxelptr.config.show_label.tooltip": "Display ore names on HUD",
 
   "gui.voxelptr.config.show_distance": "Show Distance",
   "gui.voxelptr.config.show_distance.tooltip": "Display distance on pointers",
@@ -49,6 +49,29 @@
   "gui.voxelptr.config.max_targets": "Max HUD Targets",
   "gui.voxelptr.config.max_targets.tooltip": "Maximum number of targets to show in HUD",
 
+  "message.voxelptr.enabled": "Enabled",
+  "message.voxelptr.disabled": "Disabled",
+  "message.voxelptr.disabled_hint": "Feature disabled, press V to enable",
+  "message.voxelptr.searching": "Searching for: %s",
+
+  "hud.voxelptr.mode": "Ore Mode",
+  "hud.voxelptr.targets": "Targets: %s",
+  "hud.voxelptr.direction.vertical": "V",
+  "hud.voxelptr.direction.horizontal": "H",
+  "hud.voxelptr.direction.depth": "D",
+
+  "preset.voxelptr.diamond": "Diamond Ore",
+  "preset.voxelptr.iron": "Iron Ore",
+  "preset.voxelptr.gold": "Gold Ore",
+  "preset.voxelptr.emerald": "Emerald Ore",
+  "preset.voxelptr.ancient_debris": "Ancient Debris",
+  "preset.voxelptr.coal": "Coal Ore",
+  "preset.voxelptr.redstone": "Redstone Ore",
+  "preset.voxelptr.lapis": "Lapis Ore",
+  "preset.voxelptr.copper": "Copper Ore",
+  "preset.voxelptr.quartz": "Quartz Ore",
+  "preset.voxelptr.unknown": "Unknown",
+
   "modmenu.nameTranslation.voxelptr": "VoxelPtr",
-  "modmenu.descriptionTranslation.voxelptr": "Advanced ore and entity tracking for Minecraft"
+  "modmenu.descriptionTranslation.voxelptr": "Advanced ore tracking for Minecraft"
 }

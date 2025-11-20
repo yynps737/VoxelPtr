@@ -2,6 +2,7 @@ package io.github.yynps737.voxelptr.client.hud;
 
 import io.github.yynps737.voxelptr.VoxelPtr;
 import io.github.yynps737.voxelptr.core.VoxelPtrCore;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class HudManager {
 
     private final VoxelPtrCore core;
     private final List<HudElement> elements;
+    private String lastHudPosition = "";
 
     public HudManager(VoxelPtrCore core) {
         this.core = core;
@@ -45,6 +47,9 @@ public class HudManager {
             return; // HUD 已禁用
         }
 
+        // 根据配置更新 HUD 位置
+        updateHudPosition();
+
         for (HudElement element : elements) {
             try {
                 if (element.isEnabled()) {
@@ -53,6 +58,62 @@ public class HudManager {
             } catch (Exception e) {
                 VoxelPtr.LOGGER.error("渲染 HUD 元素 {} 时出错", element.getName(), e);
             }
+        }
+    }
+
+    /**
+     * 根据配置更新 HUD 位置
+     * 性能优化：仅在位置配置改变时更新
+     */
+    private void updateHudPosition() {
+        String position = core.getConfig().getHudPosition();
+
+        // 性能优化：位置未改变则跳过
+        if (position.equals(lastHudPosition)) {
+            return;
+        }
+
+        lastHudPosition = position;
+        MinecraftClient client = MinecraftClient.getInstance();
+
+        if (client.getWindow() == null) {
+            return;
+        }
+
+        int screenWidth = client.getWindow().getScaledWidth();
+        int screenHeight = client.getWindow().getScaledHeight();
+
+        // 获取目标列表 HUD
+        HudElement targetListHud = getElement("target_list");
+        if (targetListHud != null) {
+            int x;
+            int y;
+
+            // 根据最大目标数动态估算 HUD 高度
+            int maxTargets = core.getConfig().getMaxHudTargets();
+            int hudWidth = 200;  // 预估宽度（名称+方向+距离）
+            int hudHeight = 40 + (maxTargets * 10);  // 标题行 + 每个目标10像素
+
+            switch (position) {
+                case "top_right" -> {
+                    x = screenWidth - hudWidth - 5;
+                    y = 5;
+                }
+                case "bottom_left" -> {
+                    x = 5;
+                    y = screenHeight - hudHeight - 5;
+                }
+                case "bottom_right" -> {
+                    x = screenWidth - hudWidth - 5;
+                    y = screenHeight - hudHeight - 5;
+                }
+                default -> {  // top_left
+                    x = 5;
+                    y = 5;
+                }
+            }
+
+            targetListHud.setPosition(x, y);
         }
     }
 

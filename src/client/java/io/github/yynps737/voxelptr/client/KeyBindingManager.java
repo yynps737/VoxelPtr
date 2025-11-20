@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -87,7 +88,8 @@ public class KeyBindingManager {
         core.getConfig().setEnabled(!enabled);
         core.getConfigManager().save();
 
-        String statusText = enabled ? "已禁用" : "已启用";
+        String statusKey = enabled ? "message.voxelptr.disabled" : "message.voxelptr.enabled";
+        String statusText = I18n.translate(statusKey);
         VoxelPtr.LOGGER.info("VoxelPtr {}", statusText);
 
         // 发送消息给玩家
@@ -104,7 +106,8 @@ public class KeyBindingManager {
         if (!core.getConfig().isEnabled()) {
             MinecraftClient client = MinecraftClient.getInstance();
             if (client.player != null) {
-                client.player.sendMessage(Text.literal("§6[VoxelPtr] §c功能已禁用，请先按V键启用"), false);
+                String hintText = I18n.translate("message.voxelptr.disabled_hint");
+                client.player.sendMessage(Text.literal("§6[VoxelPtr] §c" + hintText), false);
             }
             return;
         }
@@ -131,8 +134,8 @@ public class KeyBindingManager {
 
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player != null) {
-            client.player.sendMessage(Text.literal(
-                "§6[VoxelPtr] §f正在搜索矿物: §a" + displayName), false);
+            String searchingText = I18n.translate("message.voxelptr.searching", displayName);
+            client.player.sendMessage(Text.literal("§6[VoxelPtr] §f" + searchingText), false);
         }
     }
 
@@ -162,7 +165,7 @@ public class KeyBindingManager {
      * 获取当前扫描模式
      */
     public String getCurrentModeName() {
-        return "矿物模式";
+        return I18n.translate("hud.voxelptr.mode");
     }
 
     /**
@@ -193,7 +196,7 @@ public class KeyBindingManager {
             // 重新扫描当前已加载的区块
             var client = net.minecraft.client.MinecraftClient.getInstance();
             if (client != null && client.world != null && client.player != null) {
-                int scanRadius = 8; // 8个区块半径
+                int scanRadius = core.getConfig().getScanRadiusChunks();
                 blockScanner.rescanLoadedChunks(client.world, client.player.getBlockPos(), scanRadius);
             }
         }
@@ -203,19 +206,7 @@ public class KeyBindingManager {
      * 获取预设的显示名称
      */
     private String getPresetDisplayName(String presetName) {
-        return switch (presetName) {
-            case "diamond" -> "钻石矿";
-            case "iron" -> "铁矿";
-            case "gold" -> "金矿";
-            case "emerald" -> "绿宝石矿";
-            case "ancient_debris" -> "远古残骸";
-            case "coal" -> "煤矿";
-            case "redstone" -> "红石矿";
-            case "lapis" -> "青金石矿";
-            case "copper" -> "铜矿";
-            case "quartz" -> "石英矿";
-            default -> "未知";
-        };
+        return I18n.translate("preset.voxelptr." + presetName);
     }
 
     /**

@@ -3,7 +3,7 @@
   "id": "voxelptr",
   "version": "${version}",
   "name": "VoxelPtr",
-  "description": "Advanced ore and entity tracking mod for Minecraft. Track diamonds, iron, gold, emeralds, and various entities with a beautiful HUD and pointer system.",
+  "description": "Advanced ore tracking mod for Minecraft. Track diamonds, iron, gold, emeralds, and other ores with a beautiful HUD display system.",
   "authors": [
     "yynps737"
   ],

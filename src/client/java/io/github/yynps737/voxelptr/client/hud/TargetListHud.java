@@ -7,6 +7,7 @@ import io.github.yynps737.voxelptr.target.TargetTracker;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 
@@ -20,7 +21,6 @@ import java.util.List;
 public class TargetListHud extends HudElement {
 
     private final VoxelPtrCore core;
-    private final int maxTargets;
 
     // 性能优化：缓存目标列表
     private List<Target> cachedTargets = new ArrayList<>();
@@ -30,7 +30,6 @@ public class TargetListHud extends HudElement {
     public TargetListHud(VoxelPtrCore core, int x, int y) {
         super(x, y);
         this.core = core;
-        this.maxTargets = 10; // 最多显示 10 个目标
     }
 
     /**
@@ -90,7 +89,9 @@ public class TargetListHud extends HudElement {
         if (forwardDist > 1.0) frontBack = "↑";      // 前 (在前方向量上有正投影)
         else if (forwardDist < -1.0) frontBack = "↓"; // 后 (在前方向量上有负投影)
 
-        return "上下:" + upDown + " 左右:" + leftRight + " 前后:" + frontBack;
+        return I18n.translate("hud.voxelptr.direction.vertical") + ":" + upDown + " " +
+               I18n.translate("hud.voxelptr.direction.horizontal") + ":" + leftRight + " " +
+               I18n.translate("hud.voxelptr.direction.depth") + ":" + frontBack;
     }
 
     @Override
@@ -114,7 +115,7 @@ public class TargetListHud extends HudElement {
         // 性能优化：每100ms才更新一次目标列表
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastUpdateTime > UPDATE_INTERVAL_MS) {
-            cachedTargets = tracker.getNearestTargets(player, maxTargets);
+            cachedTargets = tracker.getNearestTargets(player, core.getConfig().getMaxHudTargets());
             lastUpdateTime = currentTime;
         }
 
@@ -143,7 +144,7 @@ public class TargetListHud extends HudElement {
         }
 
         // 第三行：目标数量
-        String title = "目标: " + cachedTargets.size();
+        String title = I18n.translate("hud.voxelptr.targets", String.valueOf(cachedTargets.size()));
         context.drawTextWithShadow(textRenderer, title, x, yOffset, 0xFFFFFF);
         yOffset += 12;
 
@@ -157,7 +158,7 @@ public class TargetListHud extends HudElement {
         }
 
         // 渲染每个目标（带方向指示）
-        for (int i = 0; i < Math.min(cachedTargets.size(), maxTargets); i++) {
+        for (int i = 0; i < Math.min(cachedTargets.size(), core.getConfig().getMaxHudTargets()); i++) {
             Target target = cachedTargets.get(i);
             float distance = target.getDistanceTo(player);
             String direction = getDirectionString(player, target);

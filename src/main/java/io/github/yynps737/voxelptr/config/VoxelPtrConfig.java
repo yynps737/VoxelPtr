@@ -52,7 +52,7 @@ public class VoxelPtrConfig {
     /**
      * HUD 显示的最大目标数
      */
-    private int maxHudTargets = 10;
+    private int maxHudTargets = 3;
 
     // ========== 过滤器配置 ==========
 

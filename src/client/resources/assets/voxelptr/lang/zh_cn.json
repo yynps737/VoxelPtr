@@ -5,7 +5,7 @@
   "key.voxelptr.switch_preset": "切换矿石类型",
 
   "gui.voxelptr.config.title": "VoxelPtr 配置",
-  "gui.voxelptr.config.subtitle": "自定义你的矿石和实体追踪体验",
+  "gui.voxelptr.config.subtitle": "自定义你的矿石追踪体验",
   "gui.voxelptr.config.reset": "恢复默认",
 
   "gui.voxelptr.config.category.basic": "基础设置",
@@ -17,7 +17,7 @@
   "gui.voxelptr.config.enabled.tooltip": "开启或关闭 VoxelPtr",
 
   "gui.voxelptr.config.preset": "当前预设",
-  "gui.voxelptr.config.preset.tooltip": "选择要追踪的矿石或实体类型",
+  "gui.voxelptr.config.preset.tooltip": "选择要追踪的矿石类型",
 
   "gui.voxelptr.config.scan_radius": "扫描半径",
   "gui.voxelptr.config.scan_radius.tooltip": "扫描距离（区块）",
@@ -35,7 +35,7 @@
   "gui.voxelptr.config.pointer_style.tooltip": "指针的视觉样式",
 
   "gui.voxelptr.config.show_label": "显示标签",
-  "gui.voxelptr.config.show_label.tooltip": "在指针上显示矿石/实体名称",
+  "gui.voxelptr.config.show_label.tooltip": "在HUD上显示矿石名称",
 
   "gui.voxelptr.config.show_distance": "显示距离",
   "gui.voxelptr.config.show_distance.tooltip": "在指针上显示距离",
@@ -49,6 +49,29 @@
   "gui.voxelptr.config.max_targets": "最大 HUD 目标数",
   "gui.voxelptr.config.max_targets.tooltip": "HUD 中显示的最大目标数量",
 
+  "message.voxelptr.enabled": "已启用",
+  "message.voxelptr.disabled": "已禁用",
+  "message.voxelptr.disabled_hint": "功能已禁用，请先按V键启用",
+  "message.voxelptr.searching": "正在搜索矿物: %s",
+
+  "hud.voxelptr.mode": "矿物模式",
+  "hud.voxelptr.targets": "目标: %s",
+  "hud.voxelptr.direction.vertical": "上下",
+  "hud.voxelptr.direction.horizontal": "左右",
+  "hud.voxelptr.direction.depth": "前后",
+
+  "preset.voxelptr.diamond": "钻石矿",
+  "preset.voxelptr.iron": "铁矿",
+  "preset.voxelptr.gold": "金矿",
+  "preset.voxelptr.emerald": "绿宝石矿",
+  "preset.voxelptr.ancient_debris": "远古残骸",
+  "preset.voxelptr.coal": "煤矿",
+  "preset.voxelptr.redstone": "红石矿",
+  "preset.voxelptr.lapis": "青金石矿",
+  "preset.voxelptr.copper": "铜矿",
+  "preset.voxelptr.quartz": "石英矿",
+  "preset.voxelptr.unknown": "未知",
+
   "modmenu.nameTranslation.voxelptr": "像素指针",
-  "modmenu.descriptionTranslation.voxelptr": "Minecraft 高级矿石和实体追踪"
+  "modmenu.descriptionTranslation.voxelptr": "Minecraft 高级矿石追踪"
 }

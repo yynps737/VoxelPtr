@@ -2,7 +2,7 @@
 
 All notable changes to VoxelPtr will be documented in this file.
 
-## [1.0.0] - 2025-11-21
+## [1.0.0+mc1.20.4] - 2025-11-21
 
 ### ✨ Added
 - **实时矿石扫描系统**
@@ -38,4 +38,4 @@ All notable changes to VoxelPtr will be documented in this file.
 
 ---
 
-[1.0.0]: https://github.com/yynps737/VoxelPtr/releases/tag/v1.0.0
+[1.0.0+mc1.20.4]: https://github.com/yynps737/VoxelPtr/releases/tag/v1.0.0+mc1.20.4

@@ -1,5 +1,6 @@
 package io.github.yynps737.voxelptr.client.hud;
 
+import io.github.yynps737.voxelptr.client.VoxelPtrClient;
 import io.github.yynps737.voxelptr.core.VoxelPtrCore;
 import io.github.yynps737.voxelptr.target.Target;
 import io.github.yynps737.voxelptr.target.TargetTracker;
@@ -91,12 +92,30 @@ public class TargetListHud extends HudElement {
 
         TextRenderer textRenderer = client.textRenderer;
 
-        // 渲染标题
+        int yOffset = y;
+
+        // 渲染模式和预设信息
+        var clientCore = VoxelPtrClient.getClientCore();
+        if (clientCore != null && clientCore.getKeyBindingManager() != null) {
+            var keyManager = clientCore.getKeyBindingManager();
+            String modeName = keyManager.getCurrentModeName();
+            String presetName = keyManager.getCurrentPresetName();
+
+            // 第一行：模式
+            context.drawTextWithShadow(textRenderer, "§b" + modeName, x, yOffset, 0xFFFFFF);
+            yOffset += 10;
+
+            // 第二行：预设
+            context.drawTextWithShadow(textRenderer, "§a" + presetName, x, yOffset, 0xFFFFFF);
+            yOffset += 10;
+        }
+
+        // 第三行：目标数量
         String title = "目标: " + cachedTargets.size();
-        context.drawTextWithShadow(textRenderer, title, x, y, 0xFFFFFF);
+        context.drawTextWithShadow(textRenderer, title, x, yOffset, 0xFFFFFF);
+        yOffset += 12;
 
         // 渲染每个目标（带方向指示）
-        int yOffset = y + 12;
         for (int i = 0; i < Math.min(cachedTargets.size(), maxTargets); i++) {
             Target target = cachedTargets.get(i);
             float distance = target.getDistanceTo(player);

@@ -13,7 +13,7 @@ import java.util.UUID;
 public abstract class Target {
 
     protected final UUID id;
-    protected Vec3d position;
+    protected volatile Vec3d position; // volatile 确保并发安全
     protected TargetType type;
     protected int priority;
     protected long lastSeen;

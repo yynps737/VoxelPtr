@@ -202,6 +202,7 @@ public class TargetTracker {
      * @param type 目标类型
      */
     public void clearType(TargetType type) {
-        activeTargets.values().removeIf(t -> t.getType() == type);
+        activeTargets.values().removeIf(target -> target.getType() == type);
+        io.github.yynps737.voxelptr.VoxelPtr.LOGGER.info("已清空类型为 {} 的目标", type);
     }
 }

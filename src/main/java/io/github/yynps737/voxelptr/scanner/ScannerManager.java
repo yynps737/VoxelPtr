@@ -3,11 +3,13 @@ package io.github.yynps737.voxelptr.scanner;
 import io.github.yynps737.voxelptr.VoxelPtr;
 import io.github.yynps737.voxelptr.core.VoxelPtrCore;
 import io.github.yynps737.voxelptr.scanner.impl.ChunkEventScanner;
+import io.github.yynps737.voxelptr.scanner.impl.EntityScanner;
 import io.github.yynps737.voxelptr.target.Target;
 import io.github.yynps737.voxelptr.target.TargetType;
 import io.github.yynps737.voxelptr.target.types.BlockTarget;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -39,6 +41,11 @@ public class ScannerManager {
      */
     private ChunkEventScanner blockScanner;
 
+    /**
+     * 实体扫描器（专门用于实体目标）
+     */
+    private EntityScanner entityScanner;
+
     public ScannerManager(VoxelPtrCore core) {
         this.core = core;
         this.scanners = new HashMap<>();
@@ -65,9 +72,11 @@ public class ScannerManager {
 
         scanners.put(TargetType.BLOCK, blockScanner);
 
-        // TODO Phase 2: 初始化实体扫描器
-        // EntityScanner entityScanner = new EntityScanner();
-        // scanners.put(TargetType.ENTITY, entityScanner);
+        // Phase 2: 初始化实体扫描器（默认禁用，需要用户切换预设才启用）
+        Set<EntityType<?>> defaultEntityTypes = new HashSet<>();
+        entityScanner = new EntityScanner(defaultEntityTypes);
+        entityScanner.setEnabled(false); // 默认禁用，由预设切换时启用
+        scanners.put(TargetType.ENTITY, entityScanner);
 
         // TODO Phase 3: 初始化结构扫描器
         // StructureScanner structureScanner = new StructureScanner();
@@ -161,6 +170,82 @@ public class ScannerManager {
     }
 
     /**
+     * 获取实体预设
+     * 用于用户切换不同的实体追踪目标
+     */
+    public Set<EntityType<?>> getPresetEntities(String presetName) {
+        Set<EntityType<?>> entities = new HashSet<>();
+
+        switch (presetName.toLowerCase()) {
+            case "villager":
+                entities.add(EntityType.VILLAGER);
+                entities.add(EntityType.WANDERING_TRADER);
+                break;
+
+            case "pillager":
+                entities.add(EntityType.PILLAGER);
+                entities.add(EntityType.VINDICATOR);
+                entities.add(EntityType.EVOKER);
+                entities.add(EntityType.RAVAGER);
+                entities.add(EntityType.VEX);
+                break;
+
+            case "enderman":
+                entities.add(EntityType.ENDERMAN);
+                break;
+
+            case "animals":
+                entities.add(EntityType.PIG);
+                entities.add(EntityType.COW);
+                entities.add(EntityType.SHEEP);
+                entities.add(EntityType.CHICKEN);
+                entities.add(EntityType.RABBIT);
+                entities.add(EntityType.HORSE);
+                break;
+
+            case "hostile":
+                entities.add(EntityType.ZOMBIE);
+                entities.add(EntityType.SKELETON);
+                entities.add(EntityType.CREEPER);
+                entities.add(EntityType.SPIDER);
+                entities.add(EntityType.ENDERMAN);
+                entities.add(EntityType.WITCH);
+                break;
+
+            case "player":
+                entities.add(EntityType.PLAYER);
+                break;
+
+            case "boss":
+                entities.add(EntityType.ENDER_DRAGON);
+                entities.add(EntityType.WITHER);
+                entities.add(EntityType.ELDER_GUARDIAN);
+                entities.add(EntityType.WARDEN);
+                break;
+
+            case "neutral":
+                entities.add(EntityType.IRON_GOLEM);
+                entities.add(EntityType.WOLF);
+                entities.add(EntityType.POLAR_BEAR);
+                entities.add(EntityType.BEE);
+                entities.add(EntityType.PIGLIN);
+                entities.add(EntityType.ZOMBIFIED_PIGLIN);
+                entities.add(EntityType.PANDA);
+                entities.add(EntityType.DOLPHIN);
+                entities.add(EntityType.TRADER_LLAMA);
+                entities.add(EntityType.LLAMA);
+                entities.add(EntityType.ENDERMAN);
+                break;
+
+            default:
+                // 默认为空
+                break;
+        }
+
+        return entities;
+    }
+
+    /**
      * 执行异步扫描
      *
      * @param world 世界对象
@@ -240,6 +325,15 @@ public class ScannerManager {
     }
 
     /**
+     * 获取实体扫描器（方便直接访问）
+     *
+     * @return 实体扫描器实例
+     */
+    public EntityScanner getEntityScanner() {
+        return entityScanner;
+    }
+
+    /**
      * 设置方块扫描器的目标方块
      *
      * @param blocks 新的目标方块集合
@@ -248,6 +342,23 @@ public class ScannerManager {
         if (blockScanner != null) {
             blockScanner.setTargetBlocks(blocks);
             VoxelPtr.LOGGER.info("更新目标方块集合（{} 种方块）", blocks.size());
+        }
+    }
+
+    /**
+     * 设置实体扫描器的目标实体类型
+     *
+     * @param entityTypes 新的目标实体类型集合
+     */
+    public void setTargetEntities(Set<EntityType<?>> entityTypes) {
+        if (entityScanner != null) {
+            entityScanner.setTargetEntityTypes(entityTypes);
+            VoxelPtr.LOGGER.info("更新目标实体类型集合（{} 种实体）", entityTypes.size());
+
+            // 清空旧的实体目标
+            if (core.getTargetTracker() != null) {
+                core.getTargetTracker().clearType(TargetType.ENTITY);
+            }
         }
     }
 
@@ -284,7 +395,9 @@ public class ScannerManager {
             blockScanner.shutdown();
         }
 
-        // TODO: 关闭其他扫描器
+        if (entityScanner != null) {
+            entityScanner.setEnabled(false);
+        }
 
         scanners.clear();
         VoxelPtr.LOGGER.info("扫描器已全部关闭");

@@ -2,5 +2,53 @@
   "category.voxelptr": "VoxelPtr",
   "key.voxelptr.toggle": "Toggle Enable/Disable",
   "key.voxelptr.scan": "Manual Scan",
-  "key.voxelptr.switch_preset": "Switch Ore Type"
+  "key.voxelptr.switch_preset": "Switch Ore Type",
+
+  "gui.voxelptr.config.title": "VoxelPtr Configuration",
+  "gui.voxelptr.config.subtitle": "Customize your ore and entity tracking experience",
+  "gui.voxelptr.config.reset": "Reset to Defaults",
+
+  "gui.voxelptr.config.category.basic": "Basic Settings",
+  "gui.voxelptr.config.category.scan": "Scan Settings",
+  "gui.voxelptr.config.category.render": "Rendering Settings",
+  "gui.voxelptr.config.category.hud": "HUD Settings",
+
+  "gui.voxelptr.config.enabled": "Enable Mod",
+  "gui.voxelptr.config.enabled.tooltip": "Toggle VoxelPtr on or off",
+
+  "gui.voxelptr.config.preset": "Current Preset",
+  "gui.voxelptr.config.preset.tooltip": "Select which ore or entity type to track",
+
+  "gui.voxelptr.config.scan_radius": "Scan Radius",
+  "gui.voxelptr.config.scan_radius.tooltip": "How far to scan (in chunks)",
+
+  "gui.voxelptr.config.scan_interval": "Scan Interval",
+  "gui.voxelptr.config.scan_interval.tooltip": "How often to scan (in seconds)",
+
+  "gui.voxelptr.config.async_scan": "Async Scanning",
+  "gui.voxelptr.config.async_scan.tooltip": "Scan in background thread for better performance",
+
+  "gui.voxelptr.config.max_distance": "Max Display Distance",
+  "gui.voxelptr.config.max_distance.tooltip": "Maximum distance to show pointers",
+
+  "gui.voxelptr.config.pointer_style": "Pointer Style",
+  "gui.voxelptr.config.pointer_style.tooltip": "Visual style of the pointers",
+
+  "gui.voxelptr.config.show_label": "Show Labels",
+  "gui.voxelptr.config.show_label.tooltip": "Display ore/entity names on pointers",
+
+  "gui.voxelptr.config.show_distance": "Show Distance",
+  "gui.voxelptr.config.show_distance.tooltip": "Display distance on pointers",
+
+  "gui.voxelptr.config.hud_enabled": "Enable HUD",
+  "gui.voxelptr.config.hud_enabled.tooltip": "Show target list on screen",
+
+  "gui.voxelptr.config.hud_position": "HUD Position",
+  "gui.voxelptr.config.hud_position.tooltip": "Where to display the HUD",
+
+  "gui.voxelptr.config.max_targets": "Max HUD Targets",
+  "gui.voxelptr.config.max_targets.tooltip": "Maximum number of targets to show in HUD",
+
+  "modmenu.nameTranslation.voxelptr": "VoxelPtr",
+  "modmenu.descriptionTranslation.voxelptr": "Advanced ore and entity tracking for Minecraft"
 }

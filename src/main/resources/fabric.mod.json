@@ -3,10 +3,15 @@
   "id": "voxelptr",
   "version": "${version}",
   "name": "VoxelPtr",
-  "description": "",
-  "authors": [],
-  "contact": {},
-  "license": "All-Rights-Reserved",
+  "description": "Advanced ore and entity tracking mod for Minecraft. Track diamonds, iron, gold, emeralds, and various entities with a beautiful HUD and pointer system.",
+  "authors": [
+    "yynps737"
+  ],
+  "contact": {
+    "homepage": "https://github.com/yynps737/VoxelPtr",
+    "sources": "https://github.com/yynps737/VoxelPtr"
+  },
+  "license": "MIT",
   "icon": "assets/voxelptr/icon.png",
   "environment": "*",
   "entrypoints": {
@@ -18,6 +23,9 @@
     ],
     "main": [
       "io.github.yynps737.voxelptr.VoxelPtr"
+    ],
+    "modmenu": [
+      "io.github.yynps737.voxelptr.client.modmenu.ModMenuIntegration"
     ]
   },
   "mixins": [

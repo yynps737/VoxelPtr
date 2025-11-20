@@ -126,4 +126,11 @@ public class VoxelPtrClientCore {
     public KeyBindingManager getKeyBindingManager() {
         return keyBindingManager;
     }
+
+    /**
+     * 获取服务端核心（用于访问配置等共享组件）
+     */
+    public VoxelPtrCore getServerCore() {
+        return serverCore;
+    }
 }

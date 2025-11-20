@@ -2,5 +2,53 @@
   "category.voxelptr": "像素指针",
   "key.voxelptr.toggle": "切换启用/禁用",
   "key.voxelptr.scan": "手动扫描",
-  "key.voxelptr.switch_preset": "切换矿石类型"
+  "key.voxelptr.switch_preset": "切换矿石类型",
+
+  "gui.voxelptr.config.title": "VoxelPtr 配置",
+  "gui.voxelptr.config.subtitle": "自定义你的矿石和实体追踪体验",
+  "gui.voxelptr.config.reset": "恢复默认",
+
+  "gui.voxelptr.config.category.basic": "基础设置",
+  "gui.voxelptr.config.category.scan": "扫描设置",
+  "gui.voxelptr.config.category.render": "渲染设置",
+  "gui.voxelptr.config.category.hud": "HUD 设置",
+
+  "gui.voxelptr.config.enabled": "启用模组",
+  "gui.voxelptr.config.enabled.tooltip": "开启或关闭 VoxelPtr",
+
+  "gui.voxelptr.config.preset": "当前预设",
+  "gui.voxelptr.config.preset.tooltip": "选择要追踪的矿石或实体类型",
+
+  "gui.voxelptr.config.scan_radius": "扫描半径",
+  "gui.voxelptr.config.scan_radius.tooltip": "扫描距离（区块）",
+
+  "gui.voxelptr.config.scan_interval": "扫描间隔",
+  "gui.voxelptr.config.scan_interval.tooltip": "扫描频率（秒）",
+
+  "gui.voxelptr.config.async_scan": "异步扫描",
+  "gui.voxelptr.config.async_scan.tooltip": "在后台线程扫描以获得更好的性能",
+
+  "gui.voxelptr.config.max_distance": "最大显示距离",
+  "gui.voxelptr.config.max_distance.tooltip": "指针显示的最远距离",
+
+  "gui.voxelptr.config.pointer_style": "指针样式",
+  "gui.voxelptr.config.pointer_style.tooltip": "指针的视觉样式",
+
+  "gui.voxelptr.config.show_label": "显示标签",
+  "gui.voxelptr.config.show_label.tooltip": "在指针上显示矿石/实体名称",
+
+  "gui.voxelptr.config.show_distance": "显示距离",
+  "gui.voxelptr.config.show_distance.tooltip": "在指针上显示距离",
+
+  "gui.voxelptr.config.hud_enabled": "启用 HUD",
+  "gui.voxelptr.config.hud_enabled.tooltip": "在屏幕上显示目标列表",
+
+  "gui.voxelptr.config.hud_position": "HUD 位置",
+  "gui.voxelptr.config.hud_position.tooltip": "HUD 显示位置",
+
+  "gui.voxelptr.config.max_targets": "最大 HUD 目标数",
+  "gui.voxelptr.config.max_targets.tooltip": "HUD 中显示的最大目标数量",
+
+  "modmenu.nameTranslation.voxelptr": "像素指针",
+  "modmenu.descriptionTranslation.voxelptr": "Minecraft 高级矿石和实体追踪"
 }

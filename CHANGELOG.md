@@ -2,6 +2,21 @@
 
 All notable changes to VoxelPtr will be documented in this file.
 
+## [1.0.1+mc1.20.4] - 2025-11-21
+
+### 🔔 Added
+- **Discord 通知集成**
+  - 新版本发布时自动发送 Discord 通知
+  - 包含版本信息、下载链接、主要特性
+  - 构建失败时发送错误通知
+
+### 🎯 Changed
+- **发布平台扩展**
+  - 新增 CurseForge 平台支持
+  - 优化发布流程自动化
+
+---
+
 ## [1.0.0+mc1.20.4] - 2025-11-21
 
 ### ✨ Added
@@ -38,4 +53,5 @@ All notable changes to VoxelPtr will be documented in this file.
 
 ---
 
+[1.0.1+mc1.20.4]: https://github.com/yynps737/VoxelPtr/releases/tag/v1.0.1+mc1.20.4
 [1.0.0+mc1.20.4]: https://github.com/yynps737/VoxelPtr/releases/tag/v1.0.0+mc1.20.4

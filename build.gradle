@@ -53,8 +53,8 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // ModMenu integration
-    modImplementation "com.terraformersmc:modmenu:9.0.0"
+    // ModMenu integration (8.0.1 for 1.20.2)
+    modImplementation "com.terraformersmc:modmenu:8.0.1"
 }
 
 processResources {

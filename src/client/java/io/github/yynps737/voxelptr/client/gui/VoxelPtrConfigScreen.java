@@ -237,8 +237,11 @@ public class VoxelPtrConfigScreen extends Screen {
             fadeInProgress = Math.min(1.0f, fadeInProgress + FADE_SPEED);
         }
 
-        // 渲染背景
-        renderBackground(context, mouseX, mouseY, delta);
+        // 1.20.3 修复：先调用父类渲染背景，再绘制我们的内容覆盖模糊层
+        super.render(context, mouseX, mouseY, delta);
+
+        // 渲染我们的自定义背景（覆盖模糊效果）
+        context.fill(0, 0, width, height, COLOR_BACKGROUND);
 
         // 渲染主面板
         renderMainPanel(context);
@@ -249,8 +252,12 @@ public class VoxelPtrConfigScreen extends Screen {
         // 渲染所有配置项
         renderConfigWidgets(context, mouseX, mouseY, delta);
 
-        // 渲染底部按钮
-        super.render(context, mouseX, mouseY, delta);
+        // 重新渲染按钮（因为被我们的背景覆盖了）
+        for (var child : this.children()) {
+            if (child instanceof net.minecraft.client.gui.widget.ClickableWidget widget) {
+                widget.render(context, mouseX, mouseY, delta);
+            }
+        }
 
         // 渲染工具提示
         renderTooltips(context, mouseX, mouseY);

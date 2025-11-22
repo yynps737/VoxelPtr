@@ -31,8 +31,8 @@ public class MixinInGameHud {
         try {
             VoxelPtrClientCore clientCore = VoxelPtrClient.getClientCore();
             if (clientCore != null && clientCore.getHudManager() != null) {
-                // 1.21+ API: 从 RenderTickCounter 获取 tickDelta
-                float tickDelta = tickCounter.getTickDelta(true);
+                // 1.21.5+ API: getTickDelta 重命名为 getTickProgress
+                float tickDelta = tickCounter.getTickProgress(true);
                 // 渲染所有 HUD 元素
                 clientCore.getHudManager().renderHud(context, tickDelta);
             }

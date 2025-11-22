@@ -9,7 +9,8 @@
   ],
   "contact": {
     "homepage": "https://github.com/yynps737/VoxelPtr",
-    "sources": "https://github.com/yynps737/VoxelPtr"
+    "sources": "https://github.com/yynps737/VoxelPtr",
+    "issues": "https://github.com/yynps737/VoxelPtr/issues"
   },
   "license": "MIT",
   "icon": "assets/voxelptr/icon.png",

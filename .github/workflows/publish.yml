@@ -75,34 +75,41 @@ jobs:
       - name: Parse Game Versions
         id: parse_versions
         run: |
-          # 从 game_versions 解析版本列表 (例如 1.21.6-1.21.8 -> 1.21.6\n1.21.7\n1.21.8)
           GAME_VERSIONS="${{ steps.version.outputs.game_versions }}"
 
-          if [[ "$GAME_VERSIONS" == *"-"* ]]; then
-            # 范围格式: 1.21.6-1.21.8
-            START=$(echo "$GAME_VERSIONS" | cut -d'-' -f1)
-            END=$(echo "$GAME_VERSIONS" | cut -d'-' -f2)
-
-            # 提取主版本和次版本
-            MAJOR=$(echo "$START" | cut -d'.' -f1-2)
-            START_PATCH=$(echo "$START" | cut -d'.' -f3)
-            END_PATCH=$(echo "$END" | cut -d'.' -f3)
-
-            # 生成版本列表
-            VERSIONS=""
-            for i in $(seq $START_PATCH $END_PATCH); do
-              if [ -n "$VERSIONS" ]; then
-                VERSIONS="$VERSIONS"$'\n'
+          # 硬编码特殊版本范围
+          case "$GAME_VERSIONS" in
+            "1.20-1.20.1")
+              VERSIONS="1.20"$'\n'"1.20.1"
+              ;;
+            "1.21-1.21.1")
+              VERSIONS="1.21"$'\n'"1.21.1"
+              ;;
+            *)
+              if [[ "$GAME_VERSIONS" == *"-"* ]]; then
+                # 范围格式: 1.21.6-1.21.8
+                START=$(echo "$GAME_VERSIONS" | cut -d'-' -f1)
+                END=$(echo "$GAME_VERSIONS" | cut -d'-' -f2)
+                MAJOR=$(echo "$START" | cut -d'.' -f1-2)
+                START_PATCH=$(echo "$START" | cut -d'.' -f3)
+                END_PATCH=$(echo "$END" | cut -d'.' -f3)
+                VERSIONS=""
+                for i in $(seq $START_PATCH $END_PATCH); do
+                  if [ -n "$VERSIONS" ]; then
+                    VERSIONS="$VERSIONS"$'\n'
+                  fi
+                  VERSIONS="$VERSIONS$MAJOR.$i"
+                done
+              else
+                # 单个版本: 1.21.5
+                VERSIONS="$GAME_VERSIONS"
               fi
-              VERSIONS="$VERSIONS$MAJOR.$i"
-            done
-            echo "versions<<EOF" >> $GITHUB_OUTPUT
-            echo "$VERSIONS" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
-          else
-            # 单个版本: 1.21.5
-            echo "versions=$GAME_VERSIONS" >> $GITHUB_OUTPUT
-          fi
+              ;;
+          esac
+
+          echo "versions<<EOF" >> $GITHUB_OUTPUT
+          echo "$VERSIONS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       # 8. 发布到 Modrinth (主要平台)
       - name: Publish to Modrinth

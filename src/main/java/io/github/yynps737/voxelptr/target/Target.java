@@ -35,17 +35,19 @@ public abstract class Target {
 
     /**
      * 计算到观察者的距离
+     * 1.21.9+ API: getPos() 改为 getEntityPos()
      */
     public float getDistanceTo(Entity viewer) {
-        return (float) viewer.getPos().distanceTo(position);
+        return (float) viewer.getEntityPos().distanceTo(position);
     }
 
     /**
      * 计算到观察者的平方距离（性能优化）
      * 用于排序比较，避免 sqrt 计算
+     * 1.21.9+ API: getPos() 改为 getEntityPos()
      */
     public double getSquaredDistanceTo(Entity viewer) {
-        return viewer.getPos().squaredDistanceTo(position);
+        return viewer.getEntityPos().squaredDistanceTo(position);
     }
 
     /**

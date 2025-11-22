@@ -11,6 +11,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Set;
@@ -42,14 +43,19 @@ public class KeyBindingManager {
 
     /**
      * 初始化按键绑定
+     * 1.21.9+ API: String category 改为 KeyBinding.Category
      */
     private void initializeKeyBindings() {
+        // 1.21.9+ API: KeyBinding category 需要使用 KeyBinding.Category + Identifier
+        KeyBinding.Category voxelPtrCategory =
+                KeyBinding.Category.create(Identifier.of("voxelptr", "category"));
+
         // 总开关按键 (默认: V)
         toggleKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.voxelptr.toggle",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_V,
-                "category.voxelptr"
+                voxelPtrCategory
         ));
 
         // 切换预设按键 (默认: N)
@@ -57,7 +63,7 @@ public class KeyBindingManager {
                 "key.voxelptr.switch_preset",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_N,
-                "category.voxelptr"
+                voxelPtrCategory
         ));
 
         VoxelPtr.LOGGER.info("按键绑定已注册 (V:开关 N:预设)");

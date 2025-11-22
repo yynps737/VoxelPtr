@@ -71,7 +71,8 @@ public class TargetListHud extends HudElement {
             lastPlayerYaw = currentYaw;
         }
         // 1. 获取世界坐标系下的相对位移 (World Space Delta)
-        Vec3d playerPos = player.getPos();
+        // 1.21.9+ API: getPos() 改为 getEntityPos()
+        Vec3d playerPos = player.getEntityPos();
         Vec3d targetPos = target.getPosition();
         
         double dx = targetPos.x - playerPos.x;

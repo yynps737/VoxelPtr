@@ -399,10 +399,17 @@ public class VoxelPtrConfigScreen extends Screen {
         this.init();
     }
 
+    /**
+     * 1.21.9+ API: mouseClicked 使用 Click 对象
+     */
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(net.minecraft.client.gui.Click click, boolean forward) {
+        double mouseX = click.x();
+        double mouseY = click.y();
+        int button = click.button();
+
         // 先处理父类按钮（完成和重置）
-        if (super.mouseClicked(mouseX, mouseY, button)) {
+        if (super.mouseClicked(click, forward)) {
             return true;
         }
 
@@ -444,8 +451,15 @@ public class VoxelPtrConfigScreen extends Screen {
         return true;
     }
 
+    /**
+     * 1.21.9+ API: mouseDragged 使用 Click 对象
+     */
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    public boolean mouseDragged(net.minecraft.client.gui.Click click, double deltaX, double deltaY) {
+        double mouseX = click.x();
+        double mouseY = click.y();
+        int button = click.button();
+
         if (button == 0) {
             // 拖动滚动条
             if (isDraggingScrollbar) {
@@ -474,16 +488,20 @@ public class VoxelPtrConfigScreen extends Screen {
             }
         }
 
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(click, deltaX, deltaY);
     }
 
+    /**
+     * 1.21.9+ API: mouseReleased 使用 Click 对象
+     */
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(net.minecraft.client.gui.Click click) {
+        int button = click.button();
         if (button == 0 && isDraggingScrollbar) {
             isDraggingScrollbar = false;
             return true;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(click);
     }
 
     @Override

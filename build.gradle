@@ -60,8 +60,8 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // ModMenu integration (15.0.0 for 1.21.6-1.21.8)
-    modImplementation "maven.modrinth:modmenu:15.0.0"
+    // ModMenu integration (16.0.0-rc.1 for 1.21.9)
+    modImplementation "maven.modrinth:modmenu:16.0.0-rc.1"
 }
 
 processResources {

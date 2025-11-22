@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 env:
-  JAVA_VERSION: 17
+  JAVA_VERSION: 21
   MINECRAFT_VERSION: 1.20.1
 
 jobs:

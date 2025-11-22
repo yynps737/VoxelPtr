@@ -237,8 +237,8 @@ public class VoxelPtrConfigScreen extends Screen {
             fadeInProgress = Math.min(1.0f, fadeInProgress + FADE_SPEED);
         }
 
-        // 渲染背景
-        renderBackground(context, mouseX, mouseY, delta);
+        // 渲染背景 (1.20.1 只需要 context 参数)
+        renderBackground(context);
 
         // 渲染主面板
         renderMainPanel(context);
@@ -430,10 +430,10 @@ public class VoxelPtrConfigScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-        // 滚动支持
+    public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        // 滚动支持 (1.20.1 使用 3 参数版本)
         int maxScroll = Math.max(0, contentHeight - (height - HEADER_HEIGHT - FOOTER_HEIGHT));
-        scrollOffset = Math.max(0, Math.min(maxScroll, (int) (scrollOffset - verticalAmount * 10)));
+        scrollOffset = Math.max(0, Math.min(maxScroll, (int) (scrollOffset - amount * 10)));
         return true;
     }
 

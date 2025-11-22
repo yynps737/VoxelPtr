@@ -6,7 +6,8 @@ on:
       - 'v*'
 
 env:
-  JAVA_VERSION: 21
+  JAVA_VERSION: 17
+  MINECRAFT_VERSION: 1.20.1
 
 jobs:
   build:
@@ -43,7 +44,7 @@ jobs:
           # 移除 'v' 前缀，例如 v1.0.0 -> 1.0.0
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "minecraft=1.20.4" >> $GITHUB_OUTPUT
+          echo "minecraft=${{ env.MINECRAFT_VERSION }}" >> $GITHUB_OUTPUT
 
           # 获取 JAR 文件名
           JAR_FILE=$(ls build/libs/ | grep -v sources | grep .jar$ | head -n 1)
@@ -64,7 +65,7 @@ jobs:
           CHANGELOG="${CHANGELOG//$'\r'/'%0D'}"
           echo "content=$CHANGELOG" >> $GITHUB_OUTPUT
 
-      # 7. 发布到 Modrinth (主要平台)
+      # 7. 发布到 Modrinth
       - name: Publish to Modrinth
         uses: Kir-Antipov/mc-publish@v3.3
         with:
@@ -78,7 +79,7 @@ jobs:
 
           loaders: fabric
           game-versions: |
-            1.20.4
+            1.20.1
 
           dependencies: |
             fabric-api | depends | *
@@ -86,27 +87,27 @@ jobs:
 
           changelog: ${{ steps.changelog.outputs.content }}
 
-      # 8. 发布到 CurseForge (跟随平台) - 暂时禁用
-      # - name: Publish to CurseForge
-      #   uses: Kir-Antipov/mc-publish@v3.3
-      #   with:
-      #     curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
-      #     curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-      #
-      #     files: ${{ steps.version.outputs.jar_file }}
-      #     name: VoxelPtr v${{ steps.version.outputs.version }}
-      #     version: ${{ steps.version.outputs.version }}
-      #     version-type: release
-      #
-      #     loaders: fabric
-      #     game-versions: |
-      #       1.20.4
-      #
-      #     dependencies: |
-      #       fabric-api | required
-      #       modmenu | optional
-      #
-      #     changelog: ${{ steps.changelog.outputs.content }}
+      # 8. 发布到 CurseForge
+      - name: Publish to CurseForge
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+          files: ${{ steps.version.outputs.jar_file }}
+          name: VoxelPtr v${{ steps.version.outputs.version }}
+          version: ${{ steps.version.outputs.version }}
+          version-type: release
+
+          loaders: fabric
+          game-versions: |
+            1.20.1
+
+          dependencies: |
+            fabric-api | required
+            modmenu | optional
+
+          changelog: ${{ steps.changelog.outputs.content }}
 
       # 9. 创建 GitHub Release
       - name: Create GitHub Release
@@ -121,6 +122,7 @@ jobs:
             ## 📥 下载
 
             - **Modrinth**: https://modrinth.com/mod/voxelptr
+            - **CurseForge**: https://www.curseforge.com/minecraft/mc-mods/voxelptr
 
             ## 📝 更新日志
 
@@ -143,7 +145,7 @@ jobs:
 
             **支持的 Minecraft 版本**: ${{ steps.version.outputs.minecraft }}
             **需要 Fabric API**: 是
-            **性能提升**: 50-70% 🚀
+            **性能提升**: 50-70%
           draft: false
           prerelease: false
         env:

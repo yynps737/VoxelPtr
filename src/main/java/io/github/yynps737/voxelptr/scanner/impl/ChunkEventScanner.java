@@ -98,8 +98,9 @@ public class ChunkEventScanner implements Scanner<BlockTarget> {
         ChunkPos chunkPos = chunk.getPos();
 
         // 遍历区块的所有方块
+        // 1.21.2+ API: getTopY() 改名为 getTopYInclusive()
         int minY = chunk.getBottomY();
-        int maxY = chunk.getTopY();
+        int maxY = chunk.getTopYInclusive();
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {

@@ -1,6 +1,7 @@
 package io.github.yynps737.voxelptr.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
@@ -46,7 +47,8 @@ public class RenderUtil {
         matrices.translate(x, y, z);
 
         // 设置渲染状态 - 允许透过墙壁显示
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        // 1.21.2+ API: GameRenderer::getPositionColorProgram 改为 ShaderProgramKeys.POSITION_COLOR
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableDepthTest(); // 关键：禁用深度测试，允许透视
@@ -106,7 +108,8 @@ public class RenderUtil {
         matrices.translate(centerX, centerY, centerZ);
 
         // 设置渲染状态
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        // 1.21.2+ API: GameRenderer::getPositionColorProgram 改为 ShaderProgramKeys.POSITION_COLOR
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableDepthTest(); // 透视效果
@@ -173,7 +176,8 @@ public class RenderUtil {
         matrices.translate(x, y, z);
 
         // 设置渲染状态 - 允许透过墙壁显示
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        // 1.21.2+ API: GameRenderer::getPositionColorProgram 改为 ShaderProgramKeys.POSITION_COLOR
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableDepthTest(); // 关键：禁用深度测试，允许透视
@@ -223,7 +227,8 @@ public class RenderUtil {
     ) {
         matrices.push();
 
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        // 1.21.2+ API: GameRenderer::getPositionColorProgram 改为 ShaderProgramKeys.POSITION_COLOR
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableCull();

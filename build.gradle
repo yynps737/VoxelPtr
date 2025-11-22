@@ -40,6 +40,13 @@ repositories {
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
     maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+        content {
+            includeGroup "maven.modrinth"
+        }
+    }
+    maven {
         name = "TerraformersMC"
         url = "https://maven.terraformersmc.com/"
     }
@@ -54,7 +61,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // ModMenu integration (13.0.3 for 1.21.4+)
-    modImplementation "com.terraformersmc:modmenu:13.0.3"
+    modImplementation "maven.modrinth:modmenu:13.0.3"
 }
 
 processResources {

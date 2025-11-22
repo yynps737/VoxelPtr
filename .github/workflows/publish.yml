@@ -7,7 +7,6 @@ on:
 
 env:
   JAVA_VERSION: 21
-  MINECRAFT_VERSION: 1.20.1
 
 jobs:
   build:
@@ -44,7 +43,14 @@ jobs:
           # 移除 'v' 前缀，例如 v1.0.0 -> 1.0.0
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "minecraft=${{ env.MINECRAFT_VERSION }}" >> $GITHUB_OUTPUT
+
+          # 从 gradle.properties 读取 minecraft_version
+          MC_VERSION=$(grep '^minecraft_version=' gradle.properties | cut -d'=' -f2)
+          echo "minecraft=$MC_VERSION" >> $GITHUB_OUTPUT
+
+          # 从 mod_version 提取游戏版本范围 (例如 1.0.1+mc1.21.5 -> 1.21.5, 1.0.1+mc1.21.6-1.21.8 -> 1.21.6-1.21.8)
+          GAME_VERSIONS=$(echo "$VERSION" | sed 's/.*+mc//')
+          echo "game_versions=$GAME_VERSIONS" >> $GITHUB_OUTPUT
 
           # 获取 JAR 文件名
           JAR_FILE=$(ls build/libs/ | grep -v sources | grep .jar$ | head -n 1)
@@ -65,7 +71,40 @@ jobs:
           CHANGELOG="${CHANGELOG//$'\r'/'%0D'}"
           echo "content=$CHANGELOG" >> $GITHUB_OUTPUT
 
-      # 7. 发布到 Modrinth
+      # 7. 解析游戏版本列表
+      - name: Parse Game Versions
+        id: parse_versions
+        run: |
+          # 从 game_versions 解析版本列表 (例如 1.21.6-1.21.8 -> 1.21.6\n1.21.7\n1.21.8)
+          GAME_VERSIONS="${{ steps.version.outputs.game_versions }}"
+
+          if [[ "$GAME_VERSIONS" == *"-"* ]]; then
+            # 范围格式: 1.21.6-1.21.8
+            START=$(echo "$GAME_VERSIONS" | cut -d'-' -f1)
+            END=$(echo "$GAME_VERSIONS" | cut -d'-' -f2)
+
+            # 提取主版本和次版本
+            MAJOR=$(echo "$START" | cut -d'.' -f1-2)
+            START_PATCH=$(echo "$START" | cut -d'.' -f3)
+            END_PATCH=$(echo "$END" | cut -d'.' -f3)
+
+            # 生成版本列表
+            VERSIONS=""
+            for i in $(seq $START_PATCH $END_PATCH); do
+              if [ -n "$VERSIONS" ]; then
+                VERSIONS="$VERSIONS"$'\n'
+              fi
+              VERSIONS="$VERSIONS$MAJOR.$i"
+            done
+            echo "versions<<EOF" >> $GITHUB_OUTPUT
+            echo "$VERSIONS" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            # 单个版本: 1.21.5
+            echo "versions=$GAME_VERSIONS" >> $GITHUB_OUTPUT
+          fi
+
+      # 8. 发布到 Modrinth (主要平台)
       - name: Publish to Modrinth
         uses: Kir-Antipov/mc-publish@v3.3
         with:
@@ -78,8 +117,7 @@ jobs:
           version-type: release
 
           loaders: fabric
-          game-versions: |
-            1.20.1
+          game-versions: ${{ steps.parse_versions.outputs.versions }}
 
           dependencies: |
             fabric-api | depends | *
@@ -87,7 +125,7 @@ jobs:
 
           changelog: ${{ steps.changelog.outputs.content }}
 
-      # 8. 发布到 CurseForge
+      # 9. 发布到 CurseForge
       - name: Publish to CurseForge
         uses: Kir-Antipov/mc-publish@v3.3
         with:
@@ -100,8 +138,7 @@ jobs:
           version-type: release
 
           loaders: fabric
-          game-versions: |
-            1.20.1
+          game-versions: ${{ steps.parse_versions.outputs.versions }}
 
           dependencies: |
             fabric-api | required
@@ -109,7 +146,7 @@ jobs:
 
           changelog: ${{ steps.changelog.outputs.content }}
 
-      # 9. 创建 GitHub Release
+      # 10. 创建 GitHub Release
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
@@ -122,7 +159,6 @@ jobs:
             ## 📥 下载
 
             - **Modrinth**: https://modrinth.com/mod/voxelptr
-            - **CurseForge**: https://www.curseforge.com/minecraft/mc-mods/voxelptr
 
             ## 📝 更新日志
 
@@ -145,13 +181,13 @@ jobs:
 
             **支持的 Minecraft 版本**: ${{ steps.version.outputs.minecraft }}
             **需要 Fabric API**: 是
-            **性能提升**: 50-70%
+            **性能提升**: 50-70% 🚀
           draft: false
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 10. 发送 Discord 通知
+      # 11. 发送 Discord 通知
       - name: Send Discord Notification
         if: success()
         env:
@@ -201,7 +237,7 @@ jobs:
             }' \
             "$DISCORD_WEBHOOK"
 
-      # 11. 失败通知
+      # 12. 失败通知
       - name: Send Discord Failure Notification
         if: failure()
         env:

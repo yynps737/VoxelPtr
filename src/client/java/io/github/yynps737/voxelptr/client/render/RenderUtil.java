@@ -10,6 +10,7 @@ import org.joml.Matrix4f;
 /**
  * 渲染工具类
  * 提供常用的渲染方法
+ * 适配 Minecraft 1.21+ API
  */
 public class RenderUtil {
 
@@ -52,15 +53,16 @@ public class RenderUtil {
         RenderSystem.disableCull();
         RenderSystem.lineWidth(lineWidth);
 
+        // 1.21+ API: 使用 Tessellator.begin() 返回 BufferBuilder
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
         // 绘制方块的 12 条边
         drawBoxEdges(buffer, matrix, 0, 0, 0, 1, 1, 1, red, green, blue, alpha);
 
-        tessellator.draw();
+        // 1.21+ API: 使用 BufferRenderer.drawWithGlobalProgram()
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
 
         // 恢复渲染状态
         RenderSystem.enableDepthTest();
@@ -111,9 +113,9 @@ public class RenderUtil {
         RenderSystem.disableCull();
         RenderSystem.lineWidth(lineWidth);
 
+        // 1.21+ API
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
         // 计算碰撞箱在局部坐标系中的大小
@@ -127,7 +129,8 @@ public class RenderUtil {
                 halfWidth, halfHeight, halfDepth,      // max
                 red, green, blue, alpha);
 
-        tessellator.draw();
+        // 1.21+ API
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
 
         // 恢复渲染状态
         RenderSystem.enableDepthTest();
@@ -177,15 +180,16 @@ public class RenderUtil {
         RenderSystem.disableCull();
         RenderSystem.lineWidth(lineWidth);
 
+        // 1.21+ API
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
         float size = 1.0f + expand * 2;
         drawBoxEdges(buffer, matrix, 0, 0, 0, size, size, size, red, green, blue, alpha);
 
-        tessellator.draw();
+        // 1.21+ API
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
 
         // 恢复渲染状态
         RenderSystem.enableDepthTest();
@@ -225,9 +229,9 @@ public class RenderUtil {
         RenderSystem.disableCull();
         RenderSystem.lineWidth(lineWidth);
 
+        // 1.21+ API
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
+        BufferBuilder buffer = tessellator.begin(VertexFormat.DrawMode.DEBUG_LINES, VertexFormats.POSITION_COLOR);
         Matrix4f matrix = matrices.peek().getPositionMatrix();
 
         // 起点：相机位置（在渲染坐标系中为原点）
@@ -240,14 +244,14 @@ public class RenderUtil {
         double y2 = targetPos.y - cameraPos.y;
         double z2 = targetPos.z - cameraPos.z;
 
+        // 1.21+ API: 不再需要 .next()
         buffer.vertex(matrix, (float) x1, (float) y1, (float) z1)
-                .color(red, green, blue, alpha)
-                .next();
+                .color(red, green, blue, alpha);
         buffer.vertex(matrix, (float) x2, (float) y2, (float) z2)
-                .color(red, green, blue, alpha)
-                .next();
+                .color(red, green, blue, alpha);
 
-        tessellator.draw();
+        // 1.21+ API
+        BufferRenderer.drawWithGlobalProgram(buffer.end());
 
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
@@ -286,6 +290,7 @@ public class RenderUtil {
 
     /**
      * 添加一条线
+     * 1.21+ API: 不再需要 .next()
      */
     private static void addLine(
             BufferBuilder buffer,
@@ -294,8 +299,8 @@ public class RenderUtil {
             float x2, float y2, float z2,
             float r, float g, float b, float a
     ) {
-        buffer.vertex(matrix, x1, y1, z1).color(r, g, b, a).next();
-        buffer.vertex(matrix, x2, y2, z2).color(r, g, b, a).next();
+        buffer.vertex(matrix, x1, y1, z1).color(r, g, b, a);
+        buffer.vertex(matrix, x2, y2, z2).color(r, g, b, a);
     }
 
     /**
